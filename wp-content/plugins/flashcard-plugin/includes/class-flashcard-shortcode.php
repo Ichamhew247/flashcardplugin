@@ -20,6 +20,15 @@ class Flashcard_Shortcode
         $table_categories = $wpdb->prefix . 'categories';
         $categories = $wpdb->get_results("SELECT id, name FROM $table_categories");
 
+        // ตรวจสอบพารามิเตอร์แจ้งเตือน
+        if (isset($_GET['flashcard_status'])) {
+            if ($_GET['flashcard_status'] === 'success') {
+                echo '<div class="notice success">Flashcard added successfully!</div>';
+            } elseif ($_GET['flashcard_status'] === 'error') {
+                echo '<div class="notice error">An error occurred while saving the flashcard. Please try again.</div>';
+            }
+        }
+
         // แสดงฟอร์ม
 ?>
         <form method="post" enctype="multipart/form-data">

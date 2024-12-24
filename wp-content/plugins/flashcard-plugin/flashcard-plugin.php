@@ -20,7 +20,9 @@ include_once FLASHCARD_PLUGIN_DIR_PATH . 'includes/class-flashcard-db.php';
 include_once FLASHCARD_PLUGIN_DIR_PATH . 'includes/class-flashcard-shortcode.php';
 include_once FLASHCARD_PLUGIN_DIR_PATH . 'includes/class-flashcard-category.php';
 include_once FLASHCARD_PLUGIN_DIR_PATH . 'includes/class-flashcard-frontend.php';
-require_once FLASHCARD_PLUGIN_DIR_PATH . 'includes/flashcard-file-handler.php';
+require_once plugin_dir_path(__FILE__) . 'includes/flashcard-form-handler.php';
+require_once plugin_dir_path(__FILE__) . 'includes/flashcard-file-handler.php';
+
 require_once plugin_dir_path(__FILE__) . 'admin/flashcard-admin-categories.php';
 require_once plugin_dir_path(__FILE__) . 'admin/flashcard-dashboard.php';
 
@@ -114,3 +116,5 @@ function enqueue_flashcard_styles()
         '1.0' // เวอร์ชัน
     );
 }
+
+add_action('init', 'handle_flashcard_form_submission');

@@ -91,6 +91,8 @@ class Flashcard_DB
     }
 
 
+
+
     /**
      * Drop database tables during uninstall.
      */

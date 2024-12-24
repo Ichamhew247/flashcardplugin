@@ -1,0 +1,62 @@
+/* flashcard-form.css */
+
+form {
+  max-width: 600px;
+  margin: 20px auto;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  font-family: Arial, sans-serif;
+}
+
+form label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: #333;
+}
+
+form input[type="text"],
+form input[type="file"],
+form select {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  background-color: #fff;
+  box-sizing: border-box;
+}
+
+form input[type="text"]:focus,
+form input[type="file"]:focus,
+form select:focus {
+  outline: none;
+  border-color: #0073aa;
+  box-shadow: 0 0 5px rgba(0, 115, 170, 0.5);
+}
+
+form button {
+  width: 100%;
+  padding: 12px;
+  background-color: #0073aa;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+form button:hover {
+  background-color: #005983;
+}
+
+form button:focus {
+  outline: none;
+  box-shadow: 0 0 5px rgba(0, 115, 170, 0.5);
+}

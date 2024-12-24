@@ -20,8 +20,9 @@ include_once FLASHCARD_PLUGIN_DIR_PATH . 'includes/class-flashcard-db.php';
 include_once FLASHCARD_PLUGIN_DIR_PATH . 'includes/class-flashcard-shortcode.php';
 include_once FLASHCARD_PLUGIN_DIR_PATH . 'includes/class-flashcard-category.php';
 include_once FLASHCARD_PLUGIN_DIR_PATH . 'includes/class-flashcard-frontend.php';
-require_once FLASHCARD_PLUGIN_DIR_PATH . 'includes/flashcard-form-handler.php';
 require_once FLASHCARD_PLUGIN_DIR_PATH . 'includes/flashcard-file-handler.php';
+require_once plugin_dir_path(__FILE__) . 'admin/flashcard-admin-categories.php';
+require_once plugin_dir_path(__FILE__) . 'admin/flashcard-dashboard.php';
 
 // Activation Hook
 register_activation_hook(__FILE__, 'flashcard_plugin_activate');
@@ -73,4 +74,43 @@ add_action('plugins_loaded', 'flashcard_load_textdomain');
 function flashcard_load_textdomain()
 {
     load_plugin_textdomain('flashcard-plugin', false, dirname(plugin_basename(__FILE__)) . '/languages');
+}
+
+add_action('admin_menu', 'flashcard_menu_setup');
+function flashcard_menu_setup()
+{
+    // สร้างเมนูหลัก Flashcard_FLS
+    add_menu_page(
+        'Flashcard FLS',      // Page title
+        'Flashcard_FLS',      // Menu title
+        'manage_options',     // Capability
+        'flashcard-fls',      // Menu slug
+        'render_flashcard_dashboard', // Callback function for the main page
+        'dashicons-welcome-learn-more', // Icon
+        20                    // Position
+    );
+
+    // เพิ่มเมนูย่อย Manage Categories
+    add_submenu_page(
+        'flashcard-fls',        // Parent slug (เมนูหลัก)
+        'Manage Categories',    // Page title
+        'Manage Categories',    // Submenu title
+        'manage_options',       // Capability
+        'manage-categories',    // Submenu slug
+        'render_manage_categories_page' // Callback function for Manage Categories
+    );
+}
+
+add_action('init', ['Flashcard_Shortcode', 'register_shortcodes']);
+
+
+add_action('wp_enqueue_scripts', 'enqueue_flashcard_styles');
+function enqueue_flashcard_styles()
+{
+    wp_enqueue_style(
+        'flashcard-form-style', // ชื่อของสไตล์
+        plugin_dir_url(__FILE__) . 'assets/css/flashcard-form.css', // URL ของไฟล์ CSS
+        [],
+        '1.0' // เวอร์ชัน
+    );
 }

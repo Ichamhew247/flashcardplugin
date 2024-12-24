@@ -21,14 +21,24 @@ class Flashcard_DB
 
         // Define table name
         $table_flashcards = $wpdb->prefix . 'flashcards';
+        $table_categories = $wpdb->prefix . 'categories';
 
         // Character set and collation
         $charset_collate = $wpdb->get_charset_collate();
 
+        // SQL for creating categories table
+        $sql_categories = "CREATE TABLE IF NOT EXISTS $table_categories (
+    id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+    name VARCHAR(100) NOT NULL UNIQUE,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (id)
+) $charset_collate;";
+
         // SQL for creating flashcards table
         $sql_flashcards = "CREATE TABLE IF NOT EXISTS $table_flashcards (
           id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-    category ENUM('color', 'number', 'animal') DEFAULT NULL, -- หมวดหมู่ เช่น color, number, animal
+          category_id BIGINT(20) UNSIGNED DEFAULT NULL,
     front_image VARCHAR(255) DEFAULT NULL,        -- URL ภาพด้านหน้า
     back_image VARCHAR(255) DEFAULT NULL,         -- URL ภาพด้านหลัง
     front_text JSON DEFAULT NULL,                 -- ข้อความด้านหน้า (หลายบรรทัดในรูป JSON)
@@ -42,9 +52,14 @@ class Flashcard_DB
 
         require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 
-        // Execute SQL
+        // Execute SQL for categories
+        dbDelta($sql_categories);
+
+        // Execute SQL for flashcards
         dbDelta($sql_flashcards);
     }
+
+
 
     /**
      * Insert mock data into the database.
@@ -53,7 +68,8 @@ class Flashcard_DB
     {
         global $wpdb;
 
-        // Define table name
+        // Define table names
+        $table_categories = $wpdb->prefix . 'categories';
         $table_flashcards = $wpdb->prefix . 'flashcards';
 
         // Path to the mock data file
@@ -61,6 +77,7 @@ class Flashcard_DB
 
         // Check if the file exists
         if (!file_exists($mock_data_path)) {
+            error_log("Mock data file not found.");
             return;
         }
 
@@ -68,30 +85,52 @@ class Flashcard_DB
         $mock_data = json_decode(file_get_contents($mock_data_path), true);
 
         if (empty($mock_data)) {
+            error_log("Mock data is empty.");
             return;
         }
 
+        // Insert categories
+        foreach ($mock_data['categories'] as $category) {
+            $category_name = json_encode($category['name'], JSON_UNESCAPED_UNICODE); // JSON Encoding for category name
+            $result = $wpdb->insert(
+                $table_categories,
+                [
+                    'id' => $category['id'],
+                    'name' => $category_name
+                ],
+                ['%d', '%s']
+            );
+
+            if ($result === false) {
+                error_log("Failed to insert category: " . $wpdb->last_error);
+            }
+        }
+
         // Insert flashcards
-        foreach ($mock_data as $flashcard) {
-            $wpdb->insert(
+        foreach ($mock_data['flashcards'] as $flashcard) {
+            $front_text = json_encode($flashcard['front_text'], JSON_UNESCAPED_UNICODE);
+            $back_text = json_encode($flashcard['back_text'], JSON_UNESCAPED_UNICODE);
+
+            $result = $wpdb->insert(
                 $table_flashcards,
                 [
-                    'category' => $flashcard['category'],
+                    'category_id' => $flashcard['category_id'],
                     'front_image' => $flashcard['front_image'],
                     'back_image' => $flashcard['back_image'],
-                    'front_text' => json_encode($flashcard['front_text']), // แปลง JSON เป็นสตริง
-                    'back_text' => json_encode($flashcard['back_text']),   // แปลง JSON เป็นสตริง
+                    'front_text' => $front_text,
+                    'back_text' => $back_text,
                     'front_audio' => $flashcard['front_audio'],
                     'back_audio' => $flashcard['back_audio'],
                     'created_at' => current_time('mysql'),
                 ],
-                ['%s', '%s', '%s', '%s', '%s', '%s', '%s']
+                ['%d', '%s', '%s', '%s', '%s', '%s', '%s', '%s']
             );
+
+            if ($result === false) {
+                error_log("Failed to insert flashcard: " . $wpdb->last_error);
+            }
         }
     }
-
-
-
 
     /**
      * Drop database tables during uninstall.

@@ -1,0 +1,32 @@
+[
+  {
+    "category": "color",
+    "front_image": "https://example.com/images/red.png",
+    "back_image": "https://example.com/images/red-back.png",
+    "front_text": {
+      "line1": "Red",
+      "line2": "สีแดง"
+    },
+    "back_text": {
+      "line1": "Color of passion",
+      "line2": "สีแห่งความหลงใหล"
+    },
+    "front_audio": "https://example.com/audio/red-front.mp3",
+    "back_audio": "https://example.com/audio/red-back.mp3"
+  },
+  {
+    "category": "number",
+    "front_image": "https://example.com/images/one.png",
+    "back_image": "https://example.com/images/one-back.png",
+    "front_text": {
+      "line1": "One",
+      "line2": "หนึ่ง"
+    },
+    "back_text": {
+      "line1": "The first number",
+      "line2": "หมายเลขแรก"
+    },
+    "front_audio": "https://example.com/audio/one-front.mp3",
+    "back_audio": "https://example.com/audio/one-back.mp3"
+  }
+]

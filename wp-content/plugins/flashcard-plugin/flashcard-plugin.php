@@ -65,11 +65,7 @@ function flashcard_enqueue_admin_scripts()
     wp_enqueue_script('flashcard-admin-script', FLASHCARD_PLUGIN_URL . 'assets/js/admin-script.js', array('jquery'), '1.0', true);
 }
 
-// Initialize Shortcodes
-// add_action('init', 'flashcard_register_shortcodes');
-// function flashcard_register_shortcodes() {
-//     Flashcard_Shortcode::register_shortcodes();
-// }
+
 
 // Load Text Domain for Translation
 add_action('plugins_loaded', 'flashcard_load_textdomain');

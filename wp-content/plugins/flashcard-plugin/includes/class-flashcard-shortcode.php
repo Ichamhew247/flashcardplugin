@@ -4,7 +4,6 @@ if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly
 }
 
-
 class Flashcard_Shortcode
 {
     public static function register_shortcodes()
@@ -16,11 +15,11 @@ class Flashcard_Shortcode
     {
         global $wpdb;
 
-        // ดึงข้อมูล categories จากฐานข้อมูล
+        // Fetch categories from the database
         $table_categories = $wpdb->prefix . 'categories';
         $categories = $wpdb->get_results("SELECT id, name FROM $table_categories");
 
-        // ตรวจสอบพารามิเตอร์แจ้งเตือน
+        // Check for status messages
         if (isset($_GET['flashcard_status'])) {
             if ($_GET['flashcard_status'] === 'success') {
                 echo '<div class="notice success">Flashcard added successfully!</div>';
@@ -29,7 +28,15 @@ class Flashcard_Shortcode
             }
         }
 
-        // แสดงฟอร์ม
+        // Include the CSV upload form
+        $upload_csv_form_path = plugin_dir_path(__FILE__) . '../templates/upload-csv-form.php';
+        if (file_exists($upload_csv_form_path)) {
+            include $upload_csv_form_path;
+        } else {
+            echo '<p>Error: CSV upload form not found.</p>';
+        }
+
+        // Additional form rendering
 ?>
         <form method="post" enctype="multipart/form-data">
             <label for="category_id">Select Category:</label>

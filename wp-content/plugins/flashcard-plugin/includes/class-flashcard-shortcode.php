@@ -73,8 +73,9 @@ class Flashcard_Shortcode
             <label for="back_audio">Back Audio:</label>
             <input type="file" name="back_audio" id="back_audio"><br>
 
-            <button type="submit">Submit</button>
+            <button type="submit" name="submit_flashcard">Submit</button>
         </form>
+
 <?php
     }
 }

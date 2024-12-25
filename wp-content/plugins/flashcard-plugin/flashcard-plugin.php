@@ -20,6 +20,9 @@ include_once FLASHCARD_PLUGIN_DIR_PATH . 'includes/class-flashcard-db.php';
 include_once FLASHCARD_PLUGIN_DIR_PATH . 'includes/class-flashcard-shortcode.php';
 include_once FLASHCARD_PLUGIN_DIR_PATH . 'includes/class-flashcard-category.php';
 include_once FLASHCARD_PLUGIN_DIR_PATH . 'includes/class-flashcard-frontend.php';
+include_once plugin_dir_path(__FILE__) . 'includes/class-flashcard-shortcode.php';
+include_once plugin_dir_path(__FILE__) . 'includes/class-flashcard-categories.php';
+include_once plugin_dir_path(__FILE__) . 'includes/class-flashcard-display.php';
 require_once plugin_dir_path(__FILE__) . 'includes/flashcard-form-handler.php';
 require_once plugin_dir_path(__FILE__) . 'includes/flashcard-file-handler.php';
 
@@ -100,7 +103,15 @@ function flashcard_menu_setup()
 }
 
 add_action('init', ['Flashcard_Shortcode', 'register_shortcodes']);
-
+// Enqueue styles
+add_action('wp_enqueue_scripts', function () {
+    wp_enqueue_style(
+        'flashcard-style',
+        plugin_dir_url(__FILE__) . 'assets/css/flashcard-style.css',
+        [],
+        '1.0'
+    );
+});
 
 add_action('wp_enqueue_scripts', 'enqueue_flashcard_styles');
 function enqueue_flashcard_styles()

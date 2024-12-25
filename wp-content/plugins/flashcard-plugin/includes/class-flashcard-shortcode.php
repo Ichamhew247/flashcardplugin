@@ -8,7 +8,12 @@ class Flashcard_Shortcode
 {
     public static function register_shortcodes()
     {
+        // ลงทะเบียน Shortcode สำหรับแสดงแบบฟอร์มสร้าง Flashcard
         add_shortcode('flashcard_form', [__CLASS__, 'render_flashcard_form']);
+
+
+        // ลงทะเบียน Shortcodes ไดนามิก
+        Flashcard_Categories::register_category_shortcodes();
     }
 
     public static function render_flashcard_form()

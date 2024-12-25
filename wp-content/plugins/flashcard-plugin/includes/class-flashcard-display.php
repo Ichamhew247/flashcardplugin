@@ -26,23 +26,26 @@ class Flashcard_Display
                 // Decode JSON ข้อมูลด้านหน้าและด้านหลัง
                 $front_text = json_decode($flashcard->front_text, true);
                 $back_text = json_decode($flashcard->back_text, true);
-
                 echo '<div class="flashcard">';
                 echo '<div class="flashcard-front">';
+                echo '<div class="flashcard-content">';
                 echo '<h3>' . esc_html($front_text['line1']) . '</h3>';
                 if (!empty($front_text['line2'])) {
                     echo '<p>' . esc_html($front_text['line2']) . '</p>';
                 }
-                echo '</div>';
+                echo '</div>'; // .flashcard-content
+                echo '</div>'; // .flashcard-front
 
                 echo '<div class="flashcard-back">';
+                echo '<div class="flashcard-content">';
                 echo '<h3>' . esc_html($back_text['line1']) . '</h3>';
                 if (!empty($back_text['line2'])) {
                     echo '<p>' . esc_html($back_text['line2']) . '</p>';
                 }
-                echo '</div>';
-
+                echo '</div>'; // .flashcard-content
+                echo '</div>'; // .flashcard-back
                 echo '</div>'; // .flashcard
+
             }
         } else {
             echo '<p>No flashcards found for this category.</p>';

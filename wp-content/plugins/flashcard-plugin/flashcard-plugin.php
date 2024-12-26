@@ -87,6 +87,10 @@ add_action('init', ['Flashcard_Shortcode', 'register_shortcodes']);
 add_action('wp_enqueue_scripts', 'flashcard_enqueue_assets');
 function flashcard_enqueue_assets()
 {
+    // wp_enqueue_style(
+    //     'flashcard-style',
+    //     plugins_url('assets/css/flashcard-form.css', __FILE__)
+    // );
     wp_enqueue_style(
         'flashcard-style',
         plugins_url('assets/css/flashcard-style.css', __FILE__)

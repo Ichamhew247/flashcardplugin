@@ -26,6 +26,8 @@ class Flashcard_Display
                 // Decode JSON ข้อมูลด้านหน้าและด้านหลัง
                 $front_text = json_decode($flashcard->front_text, true);
                 $back_text = json_decode($flashcard->back_text, true);
+                $front_audio = esc_url($flashcard->front_audio);
+                $back_audio = esc_url($flashcard->back_audio);
 
                 echo '<div class="flashcard is-flipped" onclick="toggleCard(this)">'; // ใช้ onclick เพื่อคลิกพลิกการ์ด
                 echo '<div class="flashcard-front">';
@@ -39,6 +41,12 @@ class Flashcard_Display
                 if (!empty($front_text['line2'])) {
                     echo '<p>' . esc_html($front_text['line2']) . '</p>';
                 }
+
+                // ปุ่มเล่นเสียงด้านหน้า
+                if (!empty($front_audio)) {
+                    echo '<button class="play-audio" data-audio="' . $front_audio . '">▶ Play Front</button>';
+                }
+
                 echo '</div>'; // .flashcard-content
                 echo '</div>'; // .flashcard-front
 
@@ -53,10 +61,15 @@ class Flashcard_Display
                 if (!empty($back_text['line2'])) {
                     echo '<p>' . esc_html($back_text['line2']) . '</p>';
                 }
+
+                // ปุ่มเล่นเสียงด้านหลัง
+                if (!empty($back_audio)) {
+                    echo '<button class="play-audio" data-audio="' . $back_audio . '">▶ Play Back</button>';
+                }
+
                 echo '</div>'; // .flashcard-content
                 echo '</div>'; // .flashcard-back
                 echo '</div>'; // .flashcard
-
             }
         } else {
             echo '<p>No flashcards found for this category.</p>';

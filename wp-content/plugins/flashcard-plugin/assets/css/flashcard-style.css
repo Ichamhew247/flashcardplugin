@@ -27,7 +27,7 @@
   position: absolute;
   top: 0;
   left: 0;
-  transition: transform 0.6s;
+  transition: transform 0.25s;
 }
 
 .flashcard.is-flipped .flashcard-front {
@@ -101,6 +101,16 @@
   background-color: #45a049;
 }
 
+/* video */
+.flashcard video {
+  width: 100%; /* Make the video take the full width of the card */
+  height: auto; /* Maintain the aspect ratio */
+  max-height: 250px; /* Limit the maximum height of the video */
+  border-radius: 8px; /* Optional: Match the rounded corners of the card */
+  margin-bottom: 10px; /* Add space below the video */
+  object-fit: cover; /* Ensure the video content fits well within the card */
+}
+
 /* --- Responsive Styles --- */
 
 /* สำหรับแท็บเล็ต */
@@ -133,6 +143,19 @@
   }
 
   .flashcard img {
+    max-height: 150px;
+  }
+}
+
+/* video */
+@media (max-width: 768px) {
+  .flashcard video {
+    max-height: 200px;
+  }
+}
+
+@media (max-width: 480px) {
+  .flashcard video {
     max-height: 150px;
   }
 }

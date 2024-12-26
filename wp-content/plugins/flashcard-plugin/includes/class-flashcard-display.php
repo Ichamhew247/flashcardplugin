@@ -27,7 +27,7 @@ class Flashcard_Display
                 $front_text = json_decode($flashcard->front_text, true);
                 $back_text = json_decode($flashcard->back_text, true);
 
-                echo '<div class="flashcard">';
+                echo '<div class="flashcard" onclick="toggleCard(this)">'; // ใช้ onclick เพื่อคลิกพลิกการ์ด
                 echo '<div class="flashcard-front">';
                 echo '<div class="flashcard-content">';
 

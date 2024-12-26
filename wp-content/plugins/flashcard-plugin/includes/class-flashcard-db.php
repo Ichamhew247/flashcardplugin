@@ -28,26 +28,27 @@ class Flashcard_DB
 
         // SQL for creating categories table
         $sql_categories = "CREATE TABLE IF NOT EXISTS $table_categories (
-    id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-    name VARCHAR(100) NOT NULL UNIQUE,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    PRIMARY KEY (id)
-) $charset_collate;";
+            id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+            name VARCHAR(100) NOT NULL UNIQUE,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            PRIMARY KEY (id)
+        ) $charset_collate;";
 
         // SQL for creating flashcards table
         $sql_flashcards = "CREATE TABLE IF NOT EXISTS $table_flashcards (
-          id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-          category_id BIGINT(20) UNSIGNED DEFAULT NULL,
-    front_image VARCHAR(255) DEFAULT NULL,        -- URL ภาพด้านหน้า
-    back_image VARCHAR(255) DEFAULT NULL,         -- URL ภาพด้านหลัง
-    front_text JSON DEFAULT NULL,                 -- ข้อความด้านหน้า (หลายบรรทัดในรูป JSON)
-    back_text JSON DEFAULT NULL,                  -- ข้อความด้านหลัง (หลายบรรทัดในรูป JSON)
-    front_audio VARCHAR(255) DEFAULT NULL,        -- URL เสียงด้านหน้า
-    back_audio VARCHAR(255) DEFAULT NULL,         -- URL เสียงด้านหลัง
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP, -- เวลาสร้าง
-    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, -- เวลาปรับปรุง
-    PRIMARY KEY (id)
+            id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+            category_id BIGINT(20) UNSIGNED DEFAULT NULL,
+            front_text JSON DEFAULT NULL,
+            back_text JSON DEFAULT NULL,
+            front_image VARCHAR(255) DEFAULT NULL,
+            back_image VARCHAR(255) DEFAULT NULL,
+            front_audio VARCHAR(255) DEFAULT NULL,
+            back_audio VARCHAR(255) DEFAULT NULL,
+            front_video VARCHAR(255) DEFAULT NULL,
+            back_video VARCHAR(255) DEFAULT NULL,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY (id)
         ) $charset_collate;";
 
         require_once ABSPATH . 'wp-admin/includes/upgrade.php';
@@ -58,8 +59,6 @@ class Flashcard_DB
         // Execute SQL for flashcards
         dbDelta($sql_flashcards);
     }
-
-
 
     /**
      * Insert mock data into the database.
@@ -91,7 +90,7 @@ class Flashcard_DB
 
         // Insert categories
         foreach ($mock_data['categories'] as $category) {
-            $category_name = json_encode($category['name'], JSON_UNESCAPED_UNICODE); // JSON Encoding for category name
+            $category_name = sanitize_text_field($category['name']); // Sanitize category name
             $result = $wpdb->insert(
                 $table_categories,
                 [
@@ -115,15 +114,17 @@ class Flashcard_DB
                 $table_flashcards,
                 [
                     'category_id' => $flashcard['category_id'],
-                    'front_image' => $flashcard['front_image'],
-                    'back_image' => $flashcard['back_image'],
+                    'front_image' => sanitize_text_field($flashcard['front_image']),
+                    'back_image' => sanitize_text_field($flashcard['back_image']),
                     'front_text' => $front_text,
                     'back_text' => $back_text,
-                    'front_audio' => $flashcard['front_audio'],
-                    'back_audio' => $flashcard['back_audio'],
+                    'front_audio' => sanitize_text_field($flashcard['front_audio']),
+                    'back_audio' => sanitize_text_field($flashcard['back_audio']),
+                    'front_video' => sanitize_text_field($flashcard['front_video']), // เพิ่มวิดีโอ
+                    'back_video' => sanitize_text_field($flashcard['back_video']), // เพิ่มวิดีโอ
                     'created_at' => current_time('mysql'),
                 ],
-                ['%d', '%s', '%s', '%s', '%s', '%s', '%s', '%s']
+                ['%d', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s']
             );
 
             if ($result === false) {
@@ -139,13 +140,16 @@ class Flashcard_DB
     {
         global $wpdb;
 
-        // Define table name
+        // Define table names
         $table_flashcards = $wpdb->prefix . 'flashcards';
+        $table_categories = $wpdb->prefix . 'categories';
 
-        // SQL for dropping table
+        // SQL for dropping tables
         $sql_flashcards = "DROP TABLE IF EXISTS $table_flashcards;";
+        $sql_categories = "DROP TABLE IF EXISTS $table_categories;";
 
         // Execute SQL
         $wpdb->query($sql_flashcards);
+        $wpdb->query($sql_categories);
     }
 }

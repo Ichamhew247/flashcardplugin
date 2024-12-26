@@ -24,6 +24,7 @@ require_once FLASHCARD_PLUGIN_DIR_PATH . 'includes/flashcard-form-handler.php';
 require_once FLASHCARD_PLUGIN_DIR_PATH . 'includes/flashcard-file-handler.php';
 require_once FLASHCARD_PLUGIN_DIR_PATH . 'admin/flashcard-admin-categories.php';
 require_once FLASHCARD_PLUGIN_DIR_PATH . 'admin/flashcard-dashboard.php';
+require_once FLASHCARD_PLUGIN_DIR_PATH . 'includes/flashcard-video-handler.php';
 
 // Activation Hook
 register_activation_hook(__FILE__, 'flashcard_plugin_activate');

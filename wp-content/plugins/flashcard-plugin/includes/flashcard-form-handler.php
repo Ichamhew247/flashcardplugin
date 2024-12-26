@@ -23,6 +23,10 @@ function handle_flashcard_form_submission()
         $front_audio = handle_file_upload('front_audio');
         $back_audio = handle_file_upload('back_audio');
 
+        $front_video = handle_video_upload('front_video', 5 * 1024 * 1024, 10); // จำกัดขนาด 5MB และความยาว 10 วินาที
+        $back_video = handle_video_upload('back_video', 5 * 1024 * 1024, 10);
+
+        // เพิ่มในฐานข้อมูล
         $result = $wpdb->insert(
             $table_flashcards,
             [
@@ -33,10 +37,13 @@ function handle_flashcard_form_submission()
                 'back_image' => $back_image,
                 'front_audio' => $front_audio,
                 'back_audio' => $back_audio,
+                'front_video' => $front_video,
+                'back_video' => $back_video,
                 'created_at' => current_time('mysql'),
             ],
-            ['%d', '%s', '%s', '%s', '%s', '%s', '%s', '%s']
+            ['%d', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s']
         );
+
 
         if ($result === false) {
             wp_redirect(add_query_arg('flashcard_status', 'error', wp_get_referer()));

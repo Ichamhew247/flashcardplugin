@@ -23,7 +23,9 @@
         "line2": "สีแห่งความหลงใหล"
       },
       "front_audio": "https://example.com/audio/red-front.mp3",
-      "back_audio": "https://example.com/audio/red-back.mp3"
+      "back_audio": "https://example.com/audio/red-back.mp3",
+      "front_video": "https://example.com/video/red-front.mp4",
+      "back_video": "https://example.com/video/red-back.mp4"
     },
     {
       "category_id": 2,
@@ -38,7 +40,9 @@
         "line2": "หมายเลขแรก"
       },
       "front_audio": "https://example.com/audio/one-front.mp3",
-      "back_audio": "https://example.com/audio/one-back.mp3"
+      "back_audio": "https://example.com/audio/one-back.mp3",
+      "front_video": "https://example.com/video/one-front.mp4",
+      "back_video": "https://example.com/video/one-back.mp4"
     }
   ]
 }

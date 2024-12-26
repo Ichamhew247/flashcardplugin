@@ -78,10 +78,16 @@ class Flashcard_Shortcode
             <label for="back_audio">Back Audio:</label>
             <input type="file" name="back_audio" id="back_audio"><br>
 
-            <label for="front_video">Front Video:</label>
+            <label for="front_video_url">Front Video URL:</label>
+            <input type="url" name="front_video_url" id="front_video_url"><br>
+
+            <label for="back_video_url">Back Video URL:</label>
+            <input type="url" name="back_video_url" id="back_video_url"><br>
+
+            <label for="front_video">Front Video (Upload):</label>
             <input type="file" name="front_video" id="front_video" accept="video/*"><br>
 
-            <label for="back_video">Back Video:</label>
+            <label for="back_video">Back Video (Upload):</label>
             <input type="file" name="back_video" id="back_video" accept="video/*"><br>
 
             <button type="submit" name="submit_flashcard">Submit</button>

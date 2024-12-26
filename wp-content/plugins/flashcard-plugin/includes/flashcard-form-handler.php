@@ -18,15 +18,18 @@ function handle_flashcard_form_submission()
             'line2' => sanitize_text_field($_POST['back_text_line2']),
         ], JSON_UNESCAPED_UNICODE);
 
+        // ตรวจสอบว่าเป็น URL หรืออัปโหลดไฟล์วิดีโอ
+        $front_video_url = !empty($_POST['front_video_url']) ? esc_url_raw($_POST['front_video_url']) : null;
+        $back_video_url = !empty($_POST['back_video_url']) ? esc_url_raw($_POST['back_video_url']) : null;
+
+        $front_video = $front_video_url ?: handle_file_upload('front_video', 5 * 1024 * 1024, 10);
+        $back_video = $back_video_url ?: handle_file_upload('back_video', 5 * 1024 * 1024, 10);
+
         $front_image = handle_file_upload('front_image');
         $back_image = handle_file_upload('back_image');
         $front_audio = handle_file_upload('front_audio');
         $back_audio = handle_file_upload('back_audio');
 
-        $front_video = handle_video_upload('front_video', 5 * 1024 * 1024, 10); // จำกัดขนาด 5MB และความยาว 10 วินาที
-        $back_video = handle_video_upload('back_video', 5 * 1024 * 1024, 10);
-
-        // เพิ่มในฐานข้อมูล
         $result = $wpdb->insert(
             $table_flashcards,
             [
@@ -44,7 +47,6 @@ function handle_flashcard_form_submission()
             ['%d', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s']
         );
 
-
         if ($result === false) {
             wp_redirect(add_query_arg('flashcard_status', 'error', wp_get_referer()));
             exit;
@@ -54,6 +56,9 @@ function handle_flashcard_form_submission()
         }
     }
 }
+add_action('init', 'handle_flashcard_form_submission');
+
+
 add_action('init', 'handle_csv_upload');
 
 function handle_csv_upload()

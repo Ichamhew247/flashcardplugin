@@ -26,9 +26,15 @@ class Flashcard_Display
                 // Decode JSON ข้อมูลด้านหน้าและด้านหลัง
                 $front_text = json_decode($flashcard->front_text, true);
                 $back_text = json_decode($flashcard->back_text, true);
+
                 echo '<div class="flashcard">';
                 echo '<div class="flashcard-front">';
                 echo '<div class="flashcard-content">';
+
+                if (!empty($flashcard->front_image)) {
+                    echo '<img src="' . esc_url($flashcard->front_image) . '" alt="Front Image">';
+                }
+
                 echo '<h3>' . esc_html($front_text['line1']) . '</h3>';
                 if (!empty($front_text['line2'])) {
                     echo '<p>' . esc_html($front_text['line2']) . '</p>';
@@ -38,6 +44,11 @@ class Flashcard_Display
 
                 echo '<div class="flashcard-back">';
                 echo '<div class="flashcard-content">';
+
+                if (!empty($flashcard->back_image)) {
+                    echo '<img src="' . esc_url($flashcard->back_image) . '" alt="Back Image">';
+                }
+
                 echo '<h3>' . esc_html($back_text['line1']) . '</h3>';
                 if (!empty($back_text['line2'])) {
                     echo '<p>' . esc_html($back_text['line2']) . '</p>';

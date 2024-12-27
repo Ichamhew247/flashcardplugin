@@ -28,7 +28,6 @@ function handle_flashcard_form_submission()
             'line2' => isset($_POST['back_text_line2']) ? sanitize_text_field($_POST['back_text_line2']) : '',
         ], JSON_UNESCAPED_UNICODE);
 
-
         // ตรวจสอบว่าเป็น URL หรืออัปโหลดไฟล์วิดีโอ
         $front_video_url = !empty($_POST['front_video_url']) ? esc_url_raw($_POST['front_video_url']) : null;
         $back_video_url = !empty($_POST['back_video_url']) ? esc_url_raw($_POST['back_video_url']) : null;
@@ -65,9 +64,11 @@ function handle_flashcard_form_submission()
         );
 
         if ($result === false) {
+            error_log('Insert Error: ' . $wpdb->last_error);
             wp_redirect(add_query_arg('flashcard_status', 'error', wp_get_referer()));
             exit;
         } else {
+            error_log('Flashcard inserted successfully.');
             wp_redirect(add_query_arg('flashcard_status', 'success', wp_get_referer()));
             exit;
         }

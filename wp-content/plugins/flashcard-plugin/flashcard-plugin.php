@@ -56,7 +56,6 @@ function flashcard_plugin_uninstall()
     Flashcard_DB::drop_tables();
 }
 
-
 // Admin Menu Setup
 add_action('admin_menu', 'flashcard_menu_setup');
 function flashcard_menu_setup()
@@ -88,27 +87,23 @@ if (class_exists('Flashcard_Shortcode')) {
     // error_log('Flashcard_Shortcode class not found');
 }
 
-
 // Enqueue Styles and Scripts
 add_action('wp_enqueue_scripts', 'flashcard_enqueue_assets');
 function flashcard_enqueue_assets()
 {
-    if (is_page() && has_shortcode(get_post()->post_content, 'flashcard_shortcode')) {
-        wp_enqueue_style(
-            'flashcard-style',
-            plugins_url('assets/css/flashcard-style.css', __FILE__)
-        );
+    wp_enqueue_style(
+        'flashcard-style',
+        plugins_url('assets/css/flashcard-style.css', __FILE__)
+    );
 
-        wp_enqueue_script(
-            'flashcard-toggle-js',
-            plugins_url('assets/js/flashcard-toggle.js', __FILE__),
-            [],
-            '1.0',
-            true
-        );
-    }
+    wp_enqueue_script(
+        'flashcard-toggle-js',
+        plugins_url('assets/js/flashcard-toggle.js', __FILE__),
+        [],
+        '1.0',
+        true
+    );
 }
-
 
 // Handle Form Submission
 add_action('init', 'handle_flashcard_form_submission');

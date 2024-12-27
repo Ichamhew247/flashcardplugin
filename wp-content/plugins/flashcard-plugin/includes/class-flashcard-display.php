@@ -16,6 +16,10 @@ class Flashcard_Display
             $wpdb->prepare("SELECT * FROM $table_flashcards WHERE category_id = %d", $category_id)
         );
 
+        if (empty($flashcards)) {
+            error_log('No flashcards found for category ID: ' . $category_id);
+        }
+
         ob_start();
 
         echo '<h2>Category: ' . esc_html($category_name) . '</h2>';
@@ -26,7 +30,7 @@ class Flashcard_Display
                 $front_text = json_decode($flashcard->front_text, true);
                 $back_text = json_decode($flashcard->back_text, true);
 
-                echo '<div class="flashcard is-flipped" onclick="toggleCard(this)">';
+                echo '<div class="flashcard" onclick="toggleCard(this)">';
                 echo '<div class="flashcard-front">';
                 echo '<div class="flashcard-content">';
 

@@ -11,7 +11,6 @@ class Flashcard_Shortcode
         // ลงทะเบียน Shortcode สำหรับแสดงแบบฟอร์มสร้าง Flashcard
         add_shortcode('flashcard_form', [__CLASS__, 'render_flashcard_form']);
 
-
         // ลงทะเบียน Shortcodes ไดนามิก
         Flashcard_Categories::register_category_shortcodes();
     }
@@ -44,6 +43,8 @@ class Flashcard_Shortcode
         // Additional form rendering
 ?>
         <form method="post" enctype="multipart/form-data">
+            <?php wp_nonce_field('flashcard_form_nonce'); ?>
+            <input type="hidden" name="flashcard_action" value="submit_flashcard">
             <label for="category_id">Select Category:</label>
             <select name="category_id" id="category_id" required>
                 <option value="">-- Select a Category --</option>

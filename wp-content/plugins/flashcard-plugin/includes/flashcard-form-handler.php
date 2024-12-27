@@ -2,31 +2,48 @@
 
 function handle_flashcard_form_submission()
 {
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['category_id'])) {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['flashcard_action'])) {
+        // ตรวจสอบ nonce
+        if (!isset($_POST['_wpnonce']) || !wp_verify_nonce($_POST['_wpnonce'], 'flashcard_form_nonce')) {
+            wp_die('Security check failed');
+        }
         global $wpdb;
 
         $table_flashcards = $wpdb->prefix . 'flashcards';
 
         $category_id = intval($_POST['category_id']);
+
+        function get_post_value($key, $default = '')
+        {
+            return isset($_POST[$key]) ? sanitize_text_field($_POST[$key]) : $default;
+        }
+
         $front_text = json_encode([
-            'line1' => sanitize_text_field($_POST['front_text_line1']),
-            'line2' => sanitize_text_field($_POST['front_text_line2']),
+            'line1' => isset($_POST['front_text_line1']) ? sanitize_text_field($_POST['front_text_line1']) : '',
+            'line2' => isset($_POST['front_text_line2']) ? sanitize_text_field($_POST['front_text_line2']) : '',
         ], JSON_UNESCAPED_UNICODE);
 
         $back_text = json_encode([
-            'line1' => sanitize_text_field($_POST['back_text_line1']),
-            'line2' => sanitize_text_field($_POST['back_text_line2']),
+            'line1' => isset($_POST['back_text_line1']) ? sanitize_text_field($_POST['back_text_line1']) : '',
+            'line2' => isset($_POST['back_text_line2']) ? sanitize_text_field($_POST['back_text_line2']) : '',
         ], JSON_UNESCAPED_UNICODE);
+
 
         // ตรวจสอบว่าเป็น URL หรืออัปโหลดไฟล์วิดีโอ
         $front_video_url = !empty($_POST['front_video_url']) ? esc_url_raw($_POST['front_video_url']) : null;
         $back_video_url = !empty($_POST['back_video_url']) ? esc_url_raw($_POST['back_video_url']) : null;
 
+        // Ensure handle_file_upload function is defined or included
+        if (!function_exists('handle_file_upload')) {
+            require_once FLASHCARD_PLUGIN_DIR_PATH . 'includes/flashcard-file-handler.php';
+        }
+
         $front_video = $front_video_url ?: handle_file_upload('front_video', 5 * 1024 * 1024, 10);
         $back_video = $back_video_url ?: handle_file_upload('back_video', 5 * 1024 * 1024, 10);
 
-        $front_image = handle_file_upload('front_image');
-        $back_image = handle_file_upload('back_image');
+        $front_image = isset($_FILES['front_image']) ? handle_file_upload('front_image') : null;
+        $back_image = isset($_FILES['back_image']) ? handle_file_upload('back_image') : null;
+
         $front_audio = handle_file_upload('front_audio');
         $back_audio = handle_file_upload('back_audio');
 
@@ -56,32 +73,50 @@ function handle_flashcard_form_submission()
         }
     }
 }
-add_action('init', 'handle_flashcard_form_submission');
+add_action('init', function () {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['flashcard_action'])) {
+        handle_flashcard_form_submission();
+    }
 
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['upload_csv'])) {
+        handle_csv_upload();
+    }
+});
 
-add_action('init', 'handle_csv_upload');
 
 function handle_csv_upload()
 {
-    if (isset($_POST['upload_csv']) && isset($_FILES['csv_file'])) {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['upload_csv']) && isset($_FILES['csv_file'])) {
         global $wpdb;
 
-        $table_flashcards = $wpdb->prefix . 'flashcards';
-        $file = $_FILES['csv_file']['tmp_name'];
+        // ตรวจสอบสิทธิ์ผู้ใช้งาน
+        if (!current_user_can('manage_options')) {
+            wp_die(__('You do not have permission to perform this action.', 'flashcard-plugin'));
+        }
 
-        // Debug: ตรวจสอบว่ามีการส่งไฟล์หรือไม่
-        if (empty($file)) {
-            error_log('CSV Upload Error: No file uploaded.');
-            wp_redirect(add_query_arg('flashcard_status', 'error_no_file', wp_get_referer()));
+        $file = $_FILES['csv_file'];
+
+        // ตรวจสอบชนิดไฟล์
+        $allowed_mime_types = ['text/csv', 'application/csv', 'application/vnd.ms-excel'];
+        if (!in_array($file['type'], $allowed_mime_types)) {
+            wp_redirect(add_query_arg('flashcard_status', 'error_invalid_file_type', wp_get_referer()));
             exit;
         }
 
-        if (($handle = fopen($file, 'r')) !== false) {
-            $is_header = true; // ใช้ตัวแปรนี้เพื่อข้าม header
-            while (($data = fgetcsv($handle, 1000, ',')) !== false) {
-                // Debug: ตรวจสอบข้อมูลแต่ละบรรทัด
-                error_log('CSV Row: ' . print_r($data, true));
+        // ตรวจสอบขนาดไฟล์ (5MB)
+        if ($file['size'] > 5 * 1024 * 1024) { // 5MB
+            wp_redirect(add_query_arg('flashcard_status', 'error_file_too_large', wp_get_referer()));
+            exit;
+        }
 
+        // ดำเนินการอ่านไฟล์ CSV
+        $file_path = $file['tmp_name'];
+
+        if (($handle = fopen($file_path, 'r')) !== false) {
+            $is_header = true; // ใช้ตัวแปรนี้เพื่อข้าม header
+            $table_flashcards = $wpdb->prefix . 'flashcards';
+
+            while (($data = fgetcsv($handle, 1000, ',')) !== false) {
                 // ข้าม header (แถวแรก)
                 if ($is_header) {
                     $is_header = false;
@@ -98,16 +133,18 @@ function handle_csv_upload()
                     $front_audio = sanitize_text_field($data[5]);
                     $back_audio = sanitize_text_field($data[6]);
 
-                    // Debug: ตรวจสอบค่าที่จะบันทึก
-                    error_log('Inserting Row: ' . print_r([
-                        'category_id' => $category_id,
-                        'front_image' => $front_image,
-                        'back_image' => $back_image,
-                        'front_text' => $front_text,
-                        'back_text' => $back_text,
-                        'front_audio' => $front_audio,
-                        'back_audio' => $back_audio,
-                    ], true));
+                    // ตรวจสอบว่ามีข้อมูลซ้ำในฐานข้อมูลหรือไม่
+                    $exists = $wpdb->get_var($wpdb->prepare(
+                        "SELECT COUNT(*) FROM $table_flashcards WHERE category_id = %d AND front_text = %s AND back_text = %s",
+                        $category_id,
+                        $front_text,
+                        $back_text
+                    ));
+
+                    if ($exists) {
+                        error_log('Duplicate entry skipped for category ID: ' . $category_id);
+                        continue; // ข้ามข้อมูลซ้ำ
+                    }
 
                     // บันทึกข้อมูลลงฐานข้อมูล
                     $result = $wpdb->insert(

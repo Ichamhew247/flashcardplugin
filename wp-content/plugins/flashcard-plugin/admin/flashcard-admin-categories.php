@@ -1,3 +1,5 @@
+<!-- class-flashcard-categories.php -->
+
 <?php
 
 if (!defined('ABSPATH')) {
@@ -61,6 +63,7 @@ function render_manage_categories_page()
         <!-- Form to Add/Update Category -->
         <form method="post">
             <input type="hidden" name="action" value="add">
+            <input type="hidden" name="_wpnonce" value="<?php echo wp_create_nonce('manage_categories_nonce'); ?>">
             <label for="category_name">Category Name:</label>
             <input type="text" name="category_name" id="category_name" required>
             <button type="submit" class="button button-primary">Add Category</button>
@@ -85,6 +88,7 @@ function render_manage_categories_page()
                             <form method="post" style="display:inline;">
                                 <input type="hidden" name="action" value="update">
                                 <input type="hidden" name="category_id" value="<?php echo esc_attr($category->id); ?>">
+                                <input type="hidden" name="_wpnonce" value="<?php echo wp_create_nonce('manage_categories_nonce'); ?>">
                                 <input type="text" name="category_name" value="<?php echo esc_attr($category->name); ?>" required>
                                 <button type="submit" class="button button-secondary">Update</button>
                             </form>
@@ -93,6 +97,7 @@ function render_manage_categories_page()
                             <form method="post" style="display:inline;">
                                 <input type="hidden" name="action" value="delete">
                                 <input type="hidden" name="category_id" value="<?php echo esc_attr($category->id); ?>">
+                                <input type="hidden" name="_wpnonce" value="<?php echo wp_create_nonce('manage_categories_nonce'); ?>">
                                 <button type="submit" class="button button-danger" onclick="return confirm('Are you sure?');">Delete</button>
                             </form>
                         </td>

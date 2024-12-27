@@ -88,22 +88,48 @@ class Flashcard_DB
             return;
         }
 
-        // Insert categories
-        foreach ($mock_data['categories'] as $category) {
-            $category_name = sanitize_text_field($category['name']); // Sanitize category name
+        // Insert flashcards
+        foreach ($mock_data['flashcards'] as $flashcard) {
+            $category_id = intval($flashcard['category_id']); // ดึง Category ID
+            $front_text = json_encode($flashcard['front_text'], JSON_UNESCAPED_UNICODE);
+            $back_text = json_encode($flashcard['back_text'], JSON_UNESCAPED_UNICODE);
+
+            // ตรวจสอบว่ามี flashcard นี้อยู่แล้วหรือไม่
+            $exists = $wpdb->get_var($wpdb->prepare(
+                "SELECT COUNT(*) FROM $table_flashcards WHERE category_id = %d AND front_text = %s AND back_text = %s",
+                $category_id,
+                $front_text,
+                $back_text
+            ));
+
+            if ($exists) {
+                error_log("Flashcard already exists for Category ID $category_id. Skipping...");
+                continue; // ข้ามการแทรก flashcard ที่ซ้ำ
+            }
+
+            // แทรกข้อมูลใหม่
             $result = $wpdb->insert(
-                $table_categories,
+                $table_flashcards,
                 [
-                    'id' => $category['id'],
-                    'name' => $category_name
+                    'category_id' => $category_id,
+                    'front_image' => sanitize_text_field($flashcard['front_image']),
+                    'back_image' => sanitize_text_field($flashcard['back_image']),
+                    'front_text' => $front_text,
+                    'back_text' => $back_text,
+                    'front_audio' => sanitize_text_field($flashcard['front_audio']),
+                    'back_audio' => sanitize_text_field($flashcard['back_audio']),
+                    'front_video' => sanitize_text_field($flashcard['front_video']),
+                    'back_video' => sanitize_text_field($flashcard['back_video']),
+                    'created_at' => current_time('mysql'),
                 ],
-                ['%d', '%s']
+                ['%d', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s']
             );
 
             if ($result === false) {
-                error_log("Failed to insert category: " . $wpdb->last_error);
+                error_log("Failed to insert flashcard: " . $wpdb->last_error);
             }
         }
+
 
         // Insert flashcards
         foreach ($mock_data['flashcards'] as $flashcard) {

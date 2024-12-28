@@ -133,6 +133,8 @@ function handle_csv_upload()
                     $back_text = json_encode(['line1' => sanitize_text_field($data[4]), 'line2' => ''], JSON_UNESCAPED_UNICODE);
                     $front_audio = sanitize_text_field($data[5]);
                     $back_audio = sanitize_text_field($data[6]);
+                    $front_video = sanitize_text_field($data[7]);
+                    $back_video = sanitize_text_field($data[8]);
 
                     // ตรวจสอบว่ามีข้อมูลซ้ำในฐานข้อมูลหรือไม่
                     $exists = $wpdb->get_var($wpdb->prepare(
@@ -158,9 +160,11 @@ function handle_csv_upload()
                             'back_text' => $back_text,
                             'front_audio' => $front_audio,
                             'back_audio' => $back_audio,
+                            'front_video' => $front_video,
+                            'back_video' => $back_video,
                             'created_at' => current_time('mysql'),
                         ],
-                        ['%d', '%s', '%s', '%s', '%s', '%s', '%s', '%s']
+                        ['%d', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s']
                     );
 
                     // Debug: ตรวจสอบผลการบันทึก

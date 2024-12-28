@@ -112,6 +112,7 @@ function handle_csv_upload()
 
         // ดำเนินการอ่านไฟล์ CSV
         $file_path = $file['tmp_name'];
+        $upload_status = 'success'; // สถานะเริ่มต้นเป็น success
 
         if (($handle = fopen($file_path, 'r')) !== false) {
             $is_header = true; // ใช้ตัวแปรนี้เพื่อข้าม header
@@ -137,8 +138,6 @@ function handle_csv_upload()
                     $front_video = sanitize_text_field($data[7]);
                     $back_video = sanitize_text_field($data[8]);
 
-
-
                     // ดึง ID ของหมวดหมู่จากชื่อ
                     $category_id = $wpdb->get_var($wpdb->prepare(
                         "SELECT id FROM $table_categories WHERE name = %s",
@@ -147,6 +146,7 @@ function handle_csv_upload()
 
                     if (!$category_id) {
                         error_log('Category not found: ' . $category_name);
+                        $upload_status = 'error_insert'; // เปลี่ยนสถานะเป็น error
                         continue; // ข้ามแถวหากไม่พบหมวดหมู่
                     }
 
@@ -171,13 +171,16 @@ function handle_csv_upload()
                     // Debug: ตรวจสอบผลการบันทึก
                     if ($result === false) {
                         error_log('Insert Error: ' . $wpdb->last_error);
+                        $upload_status = 'error_insert'; // เปลี่ยนสถานะเป็น error
                     }
+                } else {
+                    $upload_status = 'error_invalid_row'; // เปลี่ยนสถานะเป็น error หากแถวไม่ครบ
                 }
             }
             fclose($handle);
 
-            // Redirect พร้อมสถานะสำเร็จ
-            wp_redirect(add_query_arg('flashcard_status', 'success', wp_get_referer()));
+            // Redirect พร้อมสถานะตามผลลัพธ์
+            wp_redirect(add_query_arg('flashcard_status', $upload_status, wp_get_referer()));
             exit;
         } else {
             // Redirect พร้อมสถานะข้อผิดพลาด

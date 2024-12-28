@@ -28,7 +28,7 @@ class Flashcard_Shortcode
             if ($_GET['flashcard_status'] === 'success') {
                 echo '<div class="notice success">Flashcard added successfully!</div>';
             } elseif ($_GET['flashcard_status'] === 'error_insert') {
-                echo '<div class="notice error">An error occurred while saving the flashcard. Please try again.</div>';
+                echo '<div class="notice error">Error occurred while saving the flashcard. Please try again.</div>';
             }
         }
 

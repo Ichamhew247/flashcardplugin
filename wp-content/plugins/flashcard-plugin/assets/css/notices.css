@@ -1,0 +1,54 @@
+.notice {
+  padding: 15px;
+  margin: 15px 0;
+  border-radius: 5px;
+  font-size: 14px;
+  font-family: Arial, sans-serif;
+  position: relative;
+  line-height: 1.5;
+}
+
+/* Success Notice */
+.notice.success {
+  background-color: #d4edda;
+  border: 1px solid #c3e6cb;
+  color: #155724;
+}
+
+/* Error Notice */
+.notice.error {
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  color: #721c24;
+}
+
+/* Close Button */
+.notice::after {
+  font-size: 16px;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+  color: inherit;
+  opacity: 0.6;
+}
+
+.notice::after:hover {
+  opacity: 1;
+}
+
+/* Animation */
+.notice {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

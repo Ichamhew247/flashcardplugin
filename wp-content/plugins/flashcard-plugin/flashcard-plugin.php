@@ -103,7 +103,22 @@ function flashcard_enqueue_assets()
         '1.0',
         true
     );
+    wp_enqueue_script(
+        'flashcard-hide-notices', // Handle ของไฟล์
+        plugins_url('assets/js/hide-notices.js', __FILE__), // URL ไปยังไฟล์ hide-notices.js
+        [], // Dependencies (หากไม่มีให้ใส่ [])
+        '1.0', // เวอร์ชันของไฟล์
+        true // โหลดไฟล์ในส่วนท้ายของหน้า
+    );
+    wp_enqueue_style(
+        'flashcard-notices', // Handle ของไฟล์ CSS
+        plugins_url('assets/css/notices.css', __FILE__), // URL ไปยังไฟล์ notices.css
+        [], // Dependencies (หากไม่มีให้ใส่ [])
+        '1.0' // เวอร์ชันของไฟล์
+    );
 }
+
+
 
 // Handle Form Submission
 add_action('init', 'handle_flashcard_form_submission');

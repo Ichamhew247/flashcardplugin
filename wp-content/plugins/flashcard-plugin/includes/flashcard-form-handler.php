@@ -116,6 +116,7 @@ function handle_csv_upload()
         if (($handle = fopen($file_path, 'r')) !== false) {
             $is_header = true; // ใช้ตัวแปรนี้เพื่อข้าม header
             $table_flashcards = $wpdb->prefix . 'flashcards';
+            $table_categories = $wpdb->prefix . 'categories';
 
             while (($data = fgetcsv($handle, 1000, ',')) !== false) {
                 // ข้าม header (แถวแรก)
@@ -126,7 +127,7 @@ function handle_csv_upload()
 
                 // ตรวจสอบว่าแต่ละแถวมีข้อมูลเพียงพอ
                 if (count($data) >= 8) {
-                    $category_id = intval($data[0]);
+                    $category_name = sanitize_text_field($data[0]);
                     $front_image = sanitize_text_field($data[1]);
                     $back_image = sanitize_text_field($data[2]);
                     $front_text = json_encode(['line1' => sanitize_text_field($data[3]), 'line2' => ''], JSON_UNESCAPED_UNICODE);
@@ -136,17 +137,17 @@ function handle_csv_upload()
                     $front_video = sanitize_text_field($data[7]);
                     $back_video = sanitize_text_field($data[8]);
 
-                    // ตรวจสอบว่ามีข้อมูลซ้ำในฐานข้อมูลหรือไม่
-                    $exists = $wpdb->get_var($wpdb->prepare(
-                        "SELECT COUNT(*) FROM $table_flashcards WHERE category_id = %d AND front_text = %s AND back_text = %s",
-                        $category_id,
-                        $front_text,
-                        $back_text
+
+
+                    // ดึง ID ของหมวดหมู่จากชื่อ
+                    $category_id = $wpdb->get_var($wpdb->prepare(
+                        "SELECT id FROM $table_categories WHERE name = %s",
+                        $category_name
                     ));
 
-                    if ($exists) {
-                        error_log('Duplicate entry skipped for category ID: ' . $category_id);
-                        continue; // ข้ามข้อมูลซ้ำ
+                    if (!$category_id) {
+                        error_log('Category not found: ' . $category_name);
+                        continue; // ข้ามแถวหากไม่พบหมวดหมู่
                     }
 
                     // บันทึกข้อมูลลงฐานข้อมูล

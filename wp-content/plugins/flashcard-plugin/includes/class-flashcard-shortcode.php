@@ -56,13 +56,13 @@ class Flashcard_Shortcode
             </select><br>
 
             <label for="front_text_line1">Front Text Line 1:</label>
-            <input type="text" name="front_text_line1" id="front_text_line1" required><br>
+            <input type="text" name="front_text_line1" id="front_text_line1"><br>
 
             <label for="front_text_line2">Front Text Line 2:</label>
             <input type="text" name="front_text_line2"><br>
 
             <label for="back_text_line1">Back Text Line 1:</label>
-            <input type="text" name="back_text_line1" id="back_text_line1" required><br>
+            <input type="text" name="back_text_line1" id="back_text_line1"><br>
 
             <label for="back_text_line2">Back Text Line 2:</label>
             <input type="text" name="back_text_line2"><br>
